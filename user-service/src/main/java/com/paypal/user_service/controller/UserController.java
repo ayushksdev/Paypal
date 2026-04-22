@@ -10,17 +10,13 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
 
-    private UserService userService;
+    private final UserService userService;
 
     public UserController(UserService userService){
         this.userService = userService;
@@ -28,9 +24,9 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user){
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(user));
-
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(userService.createUser(user));
     }
 
     @GetMapping("/all")
@@ -40,7 +36,8 @@ public class UserController {
     
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id){
-        return userService.getUserById((id)).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+        return userService.getUserById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
-    
 }

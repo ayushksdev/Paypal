@@ -11,17 +11,15 @@ import com.paypal.user_service.repository.UserRepo;
 @Service
 public class UserServiceImp implements UserService {
 
-    private UserRepo userRepo;
+    private final UserRepo userRepo;
 
-    public UserServiceImp (UserRepo userRepo){
+    public UserServiceImp(UserRepo userRepo){
         this.userRepo = userRepo;
     }
 
-
-
     @Override
     public User createUser(User user) {
-        return (User) userRepo.save(user);
+        return userRepo.save(user);
     }
 
     @Override
@@ -34,8 +32,8 @@ public class UserServiceImp implements UserService {
         return userRepo.findAll();
     }
 
+    @Override
     public Optional<User> getUserByEmail(String email){
         return userRepo.findByEmail(email);
     }
-    
 }
