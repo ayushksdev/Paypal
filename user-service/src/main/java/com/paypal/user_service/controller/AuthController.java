@@ -15,6 +15,8 @@ import com.paypal.user_service.dto.SignupRequest;
 import com.paypal.user_service.entity.User;
 import com.paypal.user_service.service.UserServiceImp;
 import com.paypal.user_service.util.JWTUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/auth")
@@ -23,6 +25,7 @@ public class AuthController {
     private final UserServiceImp userService;
     private final JWTUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
+    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
 
     public AuthController(
             UserServiceImp userService,
@@ -36,11 +39,13 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody SignupRequest request) {
+        log.info("Signup request received for email: {}", request.getEmail());
 
         Optional<User> existingUser =
                 userService.getUserByEmail(request.getEmail());
 
         if (existingUser.isPresent()) {
+            log.warn("Signup failed: User already exists for email: {}", request.getEmail());
             return ResponseEntity.badRequest()
                     .body("⚠️ User already exists");
         }
@@ -54,6 +59,7 @@ public class AuthController {
         );
 
         User savedUser = userService.createUser(user);
+        log.info("User registered successfully with ID: {}", savedUser.getId());
 
         AuthResponse response = new AuthResponse(
                 "✅ User registered successfully",
@@ -66,11 +72,13 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+        log.info("Login request received for email: {}", request.getEmail());
 
         Optional<User> optUser =
                 userService.getUserByEmail(request.getEmail());
 
         if (optUser.isEmpty()) {
+            log.warn("Login failed: User not found for email: {}", request.getEmail());
             return ResponseEntity.status(401)
                     .body("❌ User not found");
         }
@@ -80,7 +88,8 @@ public class AuthController {
         if (!passwordEncoder.matches(
                 request.getPassword(),
                 user.getPassword())) {
-
+            
+            log.warn("Login failed: Invalid credentials for email: {}", request.getEmail());
             return ResponseEntity.status(401)
                     .body("❌ Invalid credentials");
         }
@@ -90,6 +99,7 @@ public class AuthController {
                 user.getEmail(),
                 user.getRole()
         );
+        log.info("Login successful for user ID: {}", user.getId());
 
         AuthResponse response = new AuthResponse(
                 "✅ Login successful",

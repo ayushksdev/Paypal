@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -15,12 +17,15 @@ import java.util.List;
 @RequestMapping("/api/transactions/")
 public class TransactionController {
     private final TransactionService service;
+    private static final Logger log = LoggerFactory.getLogger(TransactionController.class);
 
     public TransactionController(TransactionService service) {
         this.service = service;
     }
     @PostMapping("/create")
     public ResponseEntity<?> create(@Valid @RequestBody Transaction transaction) {
+        log.info("Create transaction request received from sender {} to receiver {} for amount {}", 
+                transaction.getSenderId(), transaction.getReceiverId(), transaction.getAmount());
 
         Transaction created = service.createTransaction(transaction);
         return ResponseEntity.ok(created);
@@ -28,6 +33,7 @@ public class TransactionController {
 
     @GetMapping("/all")
     public List<Transaction> getAll() {
+        log.info("Fetching all transactions");
         return service.getAllTransactions();
     }
 

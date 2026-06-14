@@ -5,6 +5,8 @@ import com.paypal.wallet_service.service.WalletService;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import com.paypal.wallet_service.entity.Wallet;
@@ -14,6 +16,7 @@ import com.paypal.wallet_service.entity.Wallet;
 public class WalletController {
 
     private final WalletService walletService;
+    private static final Logger log = LoggerFactory.getLogger(WalletController.class);
 
     // Constructor Injection
     public WalletController(WalletService walletService) {
@@ -25,6 +28,7 @@ public class WalletController {
     public ResponseEntity<WalletResponse> createWallet(
             @RequestBody CreateWalletRequest request
     ) {
+        log.info("Create wallet request received for userId: {}", request.getUserId());
 
         WalletResponse response =
                 walletService.createWallet(request);
@@ -37,6 +41,7 @@ public class WalletController {
     public ResponseEntity<WalletResponse> credit(
             @RequestBody CreditRequest request
     ) {
+        log.info("Credit request received for userId: {}, amount: {}", request.getUserId(), request.getAmount());
 
         WalletResponse response =
                 walletService.credit(request);
@@ -49,6 +54,7 @@ public class WalletController {
     public ResponseEntity<WalletResponse> debit(
             @RequestBody DebitRequest request
     ) {
+        log.info("Debit request received for userId: {}, amount: {}", request.getUserId(), request.getAmount());
 
         WalletResponse response =
                 walletService.debit(request);
@@ -62,6 +68,7 @@ public class WalletController {
             @PathVariable Long userId,
             @RequestParam(defaultValue = "INR") String currency
     ) {
+        log.info("Get wallet request received for userId: {}, currency: {}", userId, currency);
 
         WalletResponse response =
                 walletService.getWallet(userId, currency);
@@ -74,6 +81,7 @@ public class WalletController {
     public ResponseEntity<HoldResponse> placeHold(
             @RequestBody HoldRequest request
     ) {
+        log.info("Place hold request received for userId: {}, amount: {}", request.getUserId(), request.getAmount());
 
         HoldResponse response =
                 walletService.placeHold(request);
@@ -86,6 +94,7 @@ public class WalletController {
     public ResponseEntity<WalletResponse> captureHold(
             @RequestBody CaptureRequest request
     ) {
+        log.info("Capture hold request received for hold reference: {}", request.getHoldReference());
 
         WalletResponse response =
                 walletService.captureHold(request);
@@ -98,6 +107,7 @@ public class WalletController {
     public ResponseEntity<HoldResponse> releaseHold(
             @PathVariable String holdReference
     ) {
+        log.info("Release hold request received for hold reference: {}", holdReference);
 
         HoldResponse response =
                 walletService.releaseHold(holdReference);

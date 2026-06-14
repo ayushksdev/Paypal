@@ -1,30 +1,22 @@
 package com.paypal.reward_service.entity;
 
 
-import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
 public class Transaction {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     private Long senderId;
 
-    @Column(nullable = false)
     private Long receiverId;
 
 
-    @Column(nullable = false)
     private Double amount;
 
-    @Column(nullable = false)
     private LocalDateTime timestamp;
 
-    @Column(nullable = false)
     private String status;
 
     public Transaction() {}
@@ -39,7 +31,6 @@ public class Transaction {
         this.status = status;
     }
 
-    @PrePersist
     public void prePersist() {
         if (timestamp == null) {
             timestamp = LocalDateTime.now();

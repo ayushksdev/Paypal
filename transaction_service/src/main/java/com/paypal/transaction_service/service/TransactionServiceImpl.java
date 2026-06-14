@@ -9,12 +9,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
+
+    private static final Logger log = LoggerFactory.getLogger(TransactionServiceImpl.class);
 
     private final TransactionRepository repository;
     private final RestTemplate restTemplate;
@@ -38,6 +42,8 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public Transaction createTransaction(Transaction request) {
+        log.info("Starting transaction from sender {} to receiver {} for amount {}", 
+                 request.getSenderId(), request.getReceiverId(), request.getAmount());
 
         Transaction transaction = initializeTransaction(request);
 
@@ -47,15 +53,19 @@ public class TransactionServiceImpl implements TransactionService {
                     transaction.getSenderId(),
                     transaction.getAmount()
             );
+            log.info("Hold placed successfully with reference: {}", holdReference);
 
             validateReceiver(transaction.getReceiverId());
+            log.info("Receiver {} validated successfully", transaction.getReceiverId());
 
             captureHold(holdReference);
+            log.info("Hold captured successfully for reference: {}", holdReference);
 
             creditReceiver(
                     transaction.getReceiverId(),
                     transaction.getAmount()
             );
+            log.info("Receiver {} credited successfully", transaction.getReceiverId());
 
             transaction.setStatus("SUCCESS");
 
@@ -66,6 +76,7 @@ public class TransactionServiceImpl implements TransactionService {
             return transaction;
 
         } catch (Exception ex) {
+            log.error("Transaction failed: {}", ex.getMessage(), ex);
 
             transaction.setStatus("FAILED");
 
@@ -217,11 +228,7 @@ public class TransactionServiceImpl implements TransactionService {
             );
 
         } catch (Exception ex) {
-
-            System.err.println(
-                    "Kafka publish failed: "
-                            + ex.getMessage()
-            );
+            log.error("Kafka publish failed: {}", ex.getMessage(), ex);
         }
     }
 }
