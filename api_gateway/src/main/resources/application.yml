@@ -68,3 +68,6 @@ spring:
         - name: RequestSize
           args:
             maxSize: 1MB
+
+jwt:
+  secret: my-super-secret-key-that-you-never-share

@@ -1,6 +1,8 @@
-package com.paypal.transaction_service.dto.dto;
+package com.paypal.transaction_service.dto;
 
-public class CreditRequest {
+
+
+public class HoldRequest {
     private Long userId;
     private String currency;
     private Long amount;

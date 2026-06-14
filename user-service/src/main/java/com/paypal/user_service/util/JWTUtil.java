@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Jwts;
@@ -14,10 +15,11 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JWTUtil {
 
-    private static final String SECRET = "secret123secret123secret123secret123";
+    @Value("${jwt.secret}")
+    private String secret;
 
     private Key getSigninKey(){
-        return Keys.hmacShaKeyFor(SECRET.getBytes());
+        return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
     public String extractEmail(String token){

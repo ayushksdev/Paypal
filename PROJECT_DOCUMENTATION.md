@@ -27,7 +27,7 @@ The system employs an event-driven microservices architecture:
 ## 2. Technology Stack
 
 *   **Java Version**: Java 21
-*   **Framework**: Spring Boot 3.5.7
+*   **Framework**: Spring Boot 3.2.5
 *   **Build Tool**: Maven (with `spring-boot-maven-plugin`)
 *   **Databases**: PostgreSQL (Database-per-Service architecture)
 *   **Message Broker**: Apache Kafka (with Zookeeper via Confluent Docker images, version 7.4.1)
@@ -319,7 +319,7 @@ sequenceDiagram
 A robust, event-driven microservices backend mimicking the core functionality of PayPal.
 
 ## Architecture Overview
-Built with Java 21 and Spring Boot 3.5.7, the system consists of an API Gateway handling routing and Redis-based rate-limiting, and independent microservices for Users, Transactions, Wallets, Rewards, and Notifications. Core transactions use synchronous HTTP calls for strict consistency, while post-transaction operations (Rewards, Notifications) use asynchronous event streaming via Apache Kafka.
+Built with Java 21 and Spring Boot 3.2.5, the system consists of an API Gateway handling routing and Redis-based rate-limiting, and independent microservices for Users, Transactions, Wallets, Rewards, and Notifications. Core transactions use synchronous HTTP calls for strict consistency, while post-transaction operations (Rewards, Notifications) use asynchronous event streaming via Apache Kafka.
 
 ## Setup Instructions
 1. Ensure Docker, Java 21, and Maven are installed.

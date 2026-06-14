@@ -1,4 +1,4 @@
-package com.paypal.transaction_service.dto.dto;
+package com.paypal.transaction_service.dto;
 
 
 

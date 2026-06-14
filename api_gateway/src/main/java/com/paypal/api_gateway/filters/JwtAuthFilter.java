@@ -24,7 +24,12 @@ import java.util.List;
 @Component
 public class JwtAuthFilter implements GlobalFilter, Ordered {
 
+    private final JwtUtil jwtUtil;
     private static final Logger log = LoggerFactory.getLogger(JwtAuthFilter.class);
+
+    public JwtAuthFilter(JwtUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
+    }
 
     private static final List<String> PUBLIC_PATHS = List.of(
             "/auth/signup",
@@ -53,7 +58,7 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         try {
             String token = authHeader.substring(7);
 
-            Claims claims = JwtUtil.validateToken(token);
+            Claims claims = jwtUtil.validateToken(token);
 
             String userEmail = claims.getSubject();
 
