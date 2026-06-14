@@ -177,7 +177,7 @@ public class WalletService {
     }
 
     // GET WALLET DETAILS
-
+   @Transactional
     public WalletResponse getWallet(
             Long userId,
             String currency
@@ -229,6 +229,8 @@ public class WalletService {
 
         hold.setStatus(HoldStatus.ACTIVE);
 
+        hold.setExpiresAt(
+        java.time.LocalDateTime.now().plusMinutes(30));
         // Save wallet
         walletRepository.save(wallet);
 
@@ -341,6 +343,7 @@ public class WalletService {
 
     // HELPER METHODS
 
+    @Transactional
     private Wallet getWalletForUpdate(
             Long userId,
             String currency
@@ -378,4 +381,9 @@ public class WalletService {
                 wallet.getAvailableBalance()
         );
     }
+    
+    @Transactional
+    public java.util.List<Wallet> getAllWallets() {
+    return walletRepository.findAll();
+}
 }

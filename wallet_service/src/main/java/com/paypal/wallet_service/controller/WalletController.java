@@ -6,6 +6,9 @@ import com.paypal.wallet_service.service.WalletService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import com.paypal.wallet_service.entity.Wallet;
+
 @RestController
 @RequestMapping("/api/v1/wallets")
 public class WalletController {
@@ -18,7 +21,7 @@ public class WalletController {
     }
 
     // CREATE WALLET
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<WalletResponse> createWallet(
             @RequestBody CreateWalletRequest request
     ) {
@@ -57,7 +60,7 @@ public class WalletController {
     @GetMapping("/{userId}")
     public ResponseEntity<WalletResponse> getWallet(
             @PathVariable Long userId,
-            @RequestParam String currency
+            @RequestParam(defaultValue = "INR") String currency
     ) {
 
         WalletResponse response =
@@ -101,4 +104,13 @@ public class WalletController {
 
         return ResponseEntity.ok(response);
     }
+
+    //GET all WALLET
+   @GetMapping("/all")
+public ResponseEntity<List<Wallet>> getAllWallets() {
+
+    return ResponseEntity.ok(
+            walletService.getAllWallets()
+    );
+}
 }
