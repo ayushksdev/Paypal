@@ -16,14 +16,13 @@ import java.time.LocalDateTime;
 
 @Component
 public class NotificationConsumer {
+
     private final NotificationRepository notificationRepository;
     private final ObjectMapper mapper;
     private static final Logger log = LoggerFactory.getLogger(NotificationConsumer.class);
 
     public NotificationConsumer(NotificationRepository notificationRepository) {
         this.notificationRepository = notificationRepository;
-
-        // Setup ObjectMapper with JavaTimeModule to handle LocalDateTime
         this.mapper = new ObjectMapper();
         this.mapper.registerModule(new JavaTimeModule());
         this.mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
@@ -33,13 +32,30 @@ public class NotificationConsumer {
     public void consumeTransaction(Transaction transaction) {
         log.info("📥 Received transaction: {}", transaction);
 
-        Notification notification = new Notification();
-        notification.setUserId(transaction.getSenderId());
-        notification.setMessage("💰 ₹" + transaction.getAmount() + " received from user " + transaction.getSenderId());
-        notification.setSentAt(LocalDateTime.now());
+        // FIX 2: Notify the RECEIVER (they received money), not the sender
+        // Also create a separate notification for the sender (debit confirmation)
 
-        notificationRepository.save(notification);
-        log.info("✅ Notification saved: {}", notification);
+        // Notification for RECEIVER
+        Notification receiverNotification = new Notification();
+        receiverNotification.setUserId(transaction.getReceiverId());   // ← was senderId
+        receiverNotification.setMessage(
+                "💰 ₹" + transaction.getAmount() +
+                " received from user " + transaction.getSenderId()
+        );
+        receiverNotification.setSentAt(LocalDateTime.now());
+        notificationRepository.save(receiverNotification);
+
+        // Notification for SENDER (debit confirmation)
+        Notification senderNotification = new Notification();
+        senderNotification.setUserId(transaction.getSenderId());
+        senderNotification.setMessage(
+                "✅ ₹" + transaction.getAmount() +
+                " sent to user " + transaction.getReceiverId() + " successfully"
+        );
+        senderNotification.setSentAt(LocalDateTime.now());
+        notificationRepository.save(senderNotification);
+
+        log.info("✅ Notifications saved for sender {} and receiver {}",
+                transaction.getSenderId(), transaction.getReceiverId());
     }
-
 }
