@@ -1,0 +1,112 @@
+version: '3.8'
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.1
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - payfinity-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.4.1
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:29092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    depends_on:
+      - zookeeper
+    networks:
+      - payfinity-network
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - payfinity-network
+
+  api-gateway:
+    image: ayushks1402/api_gateway:latest
+    ports:
+      - "8080:8080"
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - USER_SERVICE_URL=http://user-service:8080
+      - TRANSACTION_SERVICE_URL=http://transaction-service:8080
+      - REWARD_SERVICE_URL=http://reward-service:8080
+      - NOTIFICATION_SERVICE_URL=http://notification-service:8080
+      - WALLET_SERVICE_URL=http://wallet-service:8080
+      - JWT_SECRET=${JWT_SECRET}
+    depends_on:
+      - redis
+    networks:
+      - payfinity-network
+
+  user-service:
+    image: ayushks1402/user-service:latest
+    environment:
+      - SPRING_DATASOURCE_URL=${USER_DB_URL}
+      - SPRING_DATASOURCE_USERNAME=${DB_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+      - WALLET_SERVICE_URL=http://wallet-service:8080/api/v1/wallets/create
+      - JWT_SECRET=${JWT_SECRET}
+    networks:
+      - payfinity-network
+
+  transaction-service:
+    image: ayushks1402/transaction_service:latest
+    environment:
+      - SPRING_DATASOURCE_URL=${TRANSACTION_DB_URL}
+      - SPRING_DATASOURCE_USERNAME=${DB_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - WALLET_SERVICE_URL=http://wallet-service:8080/api/v1/wallets
+    depends_on:
+      - kafka
+    networks:
+      - payfinity-network
+
+  wallet-service:
+    image: ayushks1402/wallet_service:latest
+    environment:
+      - SPRING_DATASOURCE_URL=${WALLET_DB_URL}
+      - SPRING_DATASOURCE_USERNAME=${DB_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+    networks:
+      - payfinity-network
+
+  notification-service:
+    image: ayushks1402/notification_service:latest
+    environment:
+      - SPRING_DATASOURCE_URL=${NOTIFICATION_DB_URL}
+      - SPRING_DATASOURCE_USERNAME=${DB_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+    depends_on:
+      - kafka
+    networks:
+      - payfinity-network
+
+  reward-service:
+    image: ayushks1402/reward_service:latest
+    environment:
+      - SPRING_DATASOURCE_URL=${REWARD_DB_URL}
+      - SPRING_DATASOURCE_USERNAME=${DB_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+    depends_on:
+      - kafka
+    networks:
+      - payfinity-network
+
+networks:
+  payfinity-network:
+    driver: bridge
