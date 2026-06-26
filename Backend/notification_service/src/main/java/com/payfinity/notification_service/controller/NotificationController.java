@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/notify")
-@CrossOrigin(origins = {"http://localhost:5173", "https://payfinity-jgpd.vercel.app", "https://payfinity-jgpd.vercel.app/"})
+@CrossOrigin(origins = { "http://localhost:5173", "https://payfinity.vercel.app" })
 public class NotificationController {
 
     @Autowired

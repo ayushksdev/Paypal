@@ -1,6 +1,5 @@
 package com.payfinity.transaction_service.controller;
 
-
 import com.payfinity.transaction_service.entity.Transaction;
 import com.payfinity.transaction_service.service.TransactionService;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = {"http://localhost:5173", "https://payfinity-jgpd.vercel.app", "https://payfinity-jgpd.vercel.app/"})
+@CrossOrigin(origins = { "http://localhost:5173", "https://payfinity.vercel.app" })
 @RequestMapping("/api/transactions")
 public class TransactionController {
     private final TransactionService service;
@@ -23,9 +22,10 @@ public class TransactionController {
     public TransactionController(TransactionService service) {
         this.service = service;
     }
+
     @PostMapping("/create")
     public ResponseEntity<?> create(@Valid @RequestBody Transaction transaction) {
-        log.info("Create transaction request received from sender {} to receiver {} for amount {}", 
+        log.info("Create transaction request received from sender {} to receiver {} for amount {}",
                 transaction.getSenderId(), transaction.getReceiverId(), transaction.getAmount());
 
         Transaction created = service.createTransaction(transaction);
@@ -33,10 +33,10 @@ public class TransactionController {
     }
 
     @GetMapping("/user/{userId}")
-public List<Transaction> getTransactionsByUser(@PathVariable Long userId) {
-    log.info("Fetching transactions for user {}", userId);
-    return service.getTransactionsByUser(userId);
-}
+    public List<Transaction> getTransactionsByUser(@PathVariable Long userId) {
+        log.info("Fetching transactions for user {}", userId);
+        return service.getTransactionsByUser(userId);
+    }
 
     @GetMapping("/all")
     public List<Transaction> getAll() {

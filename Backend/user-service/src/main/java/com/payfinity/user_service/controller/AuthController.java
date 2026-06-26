@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RestController
-@CrossOrigin(origins = {"http://localhost:5173", "https://payfinity-jgpd.vercel.app", "https://payfinity-jgpd.vercel.app/"})
+@CrossOrigin(origins = {"http://localhost:5173", "https://payfinity.vercel.app"})
 @RequestMapping("/auth")
 public class AuthController {
 

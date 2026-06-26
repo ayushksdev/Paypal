@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin(origins = {"http://localhost:5173", "https://payfinity-jgpd.vercel.app", "https://payfinity-jgpd.vercel.app/"})
+@CrossOrigin(origins = {"http://localhost:5173", "https://payfinity.vercel.app"})
 public class UserController {
 
     private final UserService userService;

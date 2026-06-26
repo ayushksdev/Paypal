@@ -16,6 +16,9 @@ import java.util.Map;
 @Configuration
 public class KafkaConsumerConfig {
 
+    @org.springframework.beans.factory.annotation.Value("${spring.kafka.bootstrap-servers:localhost:9092}")
+    private String bootstrapServers;
+
     @Bean
     public ConsumerFactory<String, Transaction> consumerFactory() {
         JsonDeserializer<Transaction> deserializer = new JsonDeserializer<>(Transaction.class);
@@ -24,7 +27,7 @@ public class KafkaConsumerConfig {
         deserializer.addTrustedPackages("com.payfinity.transaction_service.entity");
 
         Map<String, Object> props = new HashMap<>();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "notification-group");
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, deserializer);

@@ -17,8 +17,7 @@ spring:
           '[/**]':
             allowedOrigins:
               - "http://localhost:5173"
-              - "https://payfinity-jgpd.vercel.app"
-              - "https://payfinity-jgpd.vercel.app/"
+              - "https://payfinity.vercel.app"
             allowedMethods:
               - GET
               - POST

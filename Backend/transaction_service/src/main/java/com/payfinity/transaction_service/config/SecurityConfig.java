@@ -38,9 +38,8 @@ public class SecurityConfig {
 
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // Frontend URL
         configuration.setAllowedOrigins(
-                Arrays.asList("http://localhost:5173", "https://payfinity-jgpd.vercel.app", "https://payfinity-jgpd.vercel.app/")
+                Arrays.asList("http://localhost:5173", "https://payfinity.vercel.app")
         );
 
         // Allow all HTTP methods
